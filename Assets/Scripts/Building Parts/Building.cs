@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class Building
 {
-    Vector2Int size;
+    // Vector2Int size;
 	Wing[] wings;
 
-	public Vector2Int size {get {return size;}}
+	public Vector2Int size {get;set;}
 	public Wing[] Wings {get{return wings;}}
 
-	public Buildings(int sizeX, int sizeY, Wings[] wings){
-		size = new Vector2int(sizeX, sizeY);
+	public Building(int sizeX, int sizeY, Wing[] wings){
+		this.size = new Vector2Int(sizeX, sizeY);
 		this.wings = wings;
 	}
 
