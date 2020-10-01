@@ -235,12 +235,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc10438ff6403a3458c25f014f81e631, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  popSize: 10
-  mutateAddChance: 0.3
+  popSize: 30
+  mutateAddChance: 0.2
   mutateRemoveChance: 0.05
-  mutateChangeChance: 0.2
+  mutateChangeChance: 0.5
   mutateScale: 0.2
-  initIter: 100
+  initIter: 200
   displayMat: {fileID: 2100000, guid: 993e55b9af3a4a242ad0b946e98f52cc, type: 2}
   consEnables: 0100000001000000
 --- !u!4 &1698928453
