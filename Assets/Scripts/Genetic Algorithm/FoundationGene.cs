@@ -53,9 +53,6 @@ public class Foundation{
 
         return child;
 
-
-
-
     }
 
     public Mesh getMesh(){
@@ -97,6 +94,14 @@ public class Foundation{
 
 
 
+    }
+
+    public Vector3[] getBoundary(){
+        Vector3[] verts = new Vector3[genes.Count];
+        for(int i =0;i<genes.Count;i++){
+            verts[i] = new Vector3(genes[i].x,0.0f,genes[i].y);
+        }
+        return verts;
     }
 
 

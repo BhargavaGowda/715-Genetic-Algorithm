@@ -15,7 +15,7 @@ public class CreateFootPrint : MonoBehaviour
     Foundation[] population;
     FloorConstraint[] constraintList;
 
-    public int[] consEnables = new int[]{1,1};
+    public float[] constraintWeights = new float[]{1f,1f,1f};
 
 
     
@@ -23,7 +23,7 @@ public class CreateFootPrint : MonoBehaviour
     void Start()
     {
         population = new Foundation[popSize];
-        constraintList = new FloorConstraint[]{new FloorSmoothConstraint(),new FloorOrientationConstraint()};
+        constraintList = new FloorConstraint[]{new FloorSmoothConstraint(),new FloorOrientationConstraint(), new FloorAreaConstraint()};
         for(int i = 0; i<popSize;i++){
             population[i] = new Foundation();
         }
@@ -45,7 +45,7 @@ public class CreateFootPrint : MonoBehaviour
 
         float score = 0f;
         for(int i=0;i<constraintList.Length;i++){
-            score+=constraintList[i].getScore(f)*consEnables[i];
+            score+=constraintList[i].getScore(f)*constraintWeights[i];
         }
         return score;
     }
@@ -81,15 +81,18 @@ public class CreateFootPrint : MonoBehaviour
     void displayMesh(){
         Foundation[] sortedFloors = population.OrderBy(f => -1*applyConstraints(f)).ToArray();
 
-        for(int i=0; i<5;i++){
+        for(int i=0; i<3;i++){
             GameObject display = new GameObject("display");
-            display.GetComponent<Transform>().position = new Vector3(-20f+(40f/4)*i,0,0);
+            display.GetComponent<Transform>().position = new Vector3((60f/2f)*i,0,0);
             MeshFilter meshf = display.AddComponent<MeshFilter>();
             MeshRenderer meshr = display.AddComponent<MeshRenderer>();
             meshf.sharedMesh = sortedFloors[i].getMesh();
             meshr.material = displayMat;
 
+            Debug.Log(constraintList[1].getScore(sortedFloors[i]));
+
         }
+
         
 
     }

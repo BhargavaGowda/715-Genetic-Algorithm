@@ -60,3 +60,29 @@ public class FloorOrientationConstraint:FloorConstraint{
        
     }
 }
+
+public class FloorAreaConstraint:FloorConstraint{
+
+    public override float getScore(Foundation floor){
+        Mesh mesh = floor.getMesh();
+        Vector3[] verts = mesh.vertices;
+        float area = 0f;
+        for(int i =0;i<floor.genes.Count-2;i++){
+            int orig=0;
+            int old = i+1;
+            int newp = i+2;
+
+            Vector3 oldVec = verts[old] - verts[orig];
+            Vector3 newVec = verts[newp] - verts[orig];
+
+            area += 0.5f* Vector3.Cross(oldVec,newVec).magnitude;            
+            
+        }        
+
+        return area/100f;
+
+        
+
+       
+    }
+}
