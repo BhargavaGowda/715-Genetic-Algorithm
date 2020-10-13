@@ -243,7 +243,10 @@ MonoBehaviour:
   mutateScale: 1
   initIter: 200
   displayMat: {fileID: 2100000, guid: 993e55b9af3a4a242ad0b946e98f52cc, type: 2}
-  consEnables: 040000000200000001000000
+  constraintWeights:
+  - 2
+  - 1
+  - 0.25
 --- !u!114 &1698928450
 MonoBehaviour:
   m_ObjectHideFlags: 0
