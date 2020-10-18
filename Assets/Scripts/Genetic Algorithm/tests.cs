@@ -15,14 +15,19 @@ public class tests : MonoBehaviour
         Foundation footprint = new Foundation();
         footprint.setGenes(new List<Vector2>( new Vector2[] {
         new Vector2(0,0),
-        new Vector2(2,3),
-        new Vector2(-2,5),
-        new Vector2(5,5),
-        new Vector2(5,0)
+        new Vector2(0,10),
+        new Vector2(10,10),
+        new Vector2(10,0)
         }));
         Debug.Log("getting partitions");
         RoomPartitioning partition = new RoomPartitioning(footprint);
-        partition.setGenes(new List<Vector2>( new Vector2[] {new Vector2(1,4),new Vector2(3,2), new Vector2(3,4)}));
+        partition.setGenes(new List<Vector2>( new Vector2[] {
+        new Vector2(5,5),
+        new Vector2(2,2),
+        new Vector2(2,8),
+        new Vector2(8,2),
+        new Vector2(8,8),
+        }));
 
         // Line test1 = new Line(new Vector3(1,0,4),new Vector3(5,0,0));
         // Line test2 = new Line(new Vector3(2,0,3),new Vector3(5,0,3));

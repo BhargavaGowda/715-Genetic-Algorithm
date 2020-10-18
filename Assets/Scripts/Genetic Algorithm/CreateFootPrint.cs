@@ -81,15 +81,20 @@ public class CreateFootPrint : MonoBehaviour
     void displayMesh(){
         Foundation[] sortedFloors = population.OrderBy(f => -1*applyConstraints(f)).ToArray();
 
-        for(int i=0; i<3;i++){
+        for(int i=0; i<1;i++){
             GameObject display = new GameObject("display");
-            display.GetComponent<Transform>().position = new Vector3((60f/2f)*i,0,0);
+            display.GetComponent<Transform>().position = new Vector3((40f/2f)*i,0,0);
             MeshFilter meshf = display.AddComponent<MeshFilter>();
             MeshRenderer meshr = display.AddComponent<MeshRenderer>();
             meshf.sharedMesh = sortedFloors[i].getMesh();
             meshr.material = displayMat;
 
+            Debug.Log(constraintList[0].getScore(sortedFloors[i]));
             Debug.Log(constraintList[1].getScore(sortedFloors[i]));
+            Debug.Log(constraintList[2].getScore(sortedFloors[i]));
+
+
+
 
         }
 
