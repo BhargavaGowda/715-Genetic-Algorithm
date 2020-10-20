@@ -6,6 +6,7 @@ using UnityEngine;
 class BuildingGenerator:MonoBehaviour{
 
     public List<Vector3> lot;
+    List<List<Vector3>> rooms;
     public int popSize = 10;
     public float mutateAdd = 0.1f;
     public float mutateRemove = 0.1f;
@@ -24,10 +25,13 @@ class BuildingGenerator:MonoBehaviour{
         displayFootprint(footprint);
         //Debug.Log(new LotPointsConstraint(lot).getScore(footprint));
         RoomPartitioning partitioning = getPartitioning(footprint);
+        rooms = partitioning.getPartitions();
         displayRooms(partitioning);
 
 
     }
+
+    
 
     Foundation getFootprint(){
         List<Constraint<Foundation>> footprintConstraints = new List<Constraint<Foundation>>();
