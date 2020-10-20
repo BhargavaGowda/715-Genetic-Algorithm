@@ -26,7 +26,7 @@ public class RoomPartition : MonoBehaviour
     public int initIter = 10;
     public Material displayMat;
     Foundation[] population;
-    FloorConstraint[] constraintList;
+    Constraint<Foundation>[] constraintList;
 
     public int[] consEnables = new int[]{1,1};
 
@@ -36,7 +36,7 @@ public class RoomPartition : MonoBehaviour
     void Start()
     {
         population = new Foundation[popSize];
-        constraintList = new FloorConstraint[]{new FloorSmoothConstraint(),new FloorOrientationConstraint()};
+        constraintList = new Constraint<Foundation>[]{new FloorSmoothConstraint(),new FloorOrientationConstraint()};
         for(int i = 0; i<popSize;i++){
             population[i] = new Foundation();
         }
@@ -100,8 +100,8 @@ public class RoomPartition : MonoBehaviour
 		//get mesh vertices FIRST FLOOR IN MESH
 		Mesh mesh;
 		Vector3[] vertices;
-		mesh = sortedFloors[0].getMesh();
-    vertices = mesh.vertices;
+		mesh = Helpers.triangulate(sortedFloors[0].getBoundary());
+        vertices = mesh.vertices;
 		Bounds bounds = mesh.bounds;
     /*
 		MeshCollider meshCollider = gameObject.AddComponent<MeshCollider>();
@@ -147,7 +147,7 @@ public class RoomPartition : MonoBehaviour
             //display.GetComponent<Transform>().position = new Vector3(-20f+(40f/4)*i,0,0);
             MeshFilter meshf = display.AddComponent<MeshFilter>();
             MeshRenderer meshr = display.AddComponent<MeshRenderer>();
-            meshf.sharedMesh = sortedFloors[i].getMesh();
+            meshf.sharedMesh = Helpers.triangulate(sortedFloors[i].getBoundary());
             meshr.material = displayMat;
       }
 

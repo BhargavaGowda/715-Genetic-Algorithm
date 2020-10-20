@@ -13,7 +13,7 @@ public class CreateFootPrint : MonoBehaviour
     public int initIter = 10;
     public Material displayMat;
     Foundation[] population;
-    FloorConstraint[] constraintList;
+    Constraint<Foundation>[] constraintList;
 
     public float[] constraintWeights = new float[]{1f,1f,1f};
 
@@ -23,7 +23,7 @@ public class CreateFootPrint : MonoBehaviour
     void Start()
     {
         population = new Foundation[popSize];
-        constraintList = new FloorConstraint[]{new FloorSmoothConstraint(),new FloorOrientationConstraint(), new FloorAreaConstraint()};
+        constraintList = new Constraint<Foundation>[]{new FloorSmoothConstraint(),new FloorOrientationConstraint()};
         for(int i = 0; i<popSize;i++){
             population[i] = new Foundation();
         }
@@ -86,7 +86,7 @@ public class CreateFootPrint : MonoBehaviour
             display.GetComponent<Transform>().position = new Vector3((40f/2f)*i,0,0);
             MeshFilter meshf = display.AddComponent<MeshFilter>();
             MeshRenderer meshr = display.AddComponent<MeshRenderer>();
-            meshf.sharedMesh = sortedFloors[i].getMesh();
+            meshf.sharedMesh = Helpers.triangulate(sortedFloors[i].getBoundary());
             meshr.material = displayMat;
 
             Debug.Log(constraintList[0].getScore(sortedFloors[i]));

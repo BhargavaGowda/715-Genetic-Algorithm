@@ -3,63 +3,81 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class RoomPartitioning{
+//Input is points of footprint. Output is points of rooms, inner walls, outer walls.
+public class RoomPartitioning:Gene<RoomPartitioning>{
 
     public List<Vector2> genes;
     public Foundation footprint;
     List<Line> outerWalls;
     List<Line> innerWalls;
 
-    public RoomPartitioning(Foundation input){
+    public RoomPartitioning(Foundation input,List<Vector2> genes){
         this.footprint = input;
-        this.genes = new List<Vector2>();
-        for(int i =0;i<3;i++){
-            genes.Add(new Vector2(5.0f*Random.Range(-1.0f,1.0f),5.0f*Random.Range(-1.0f,1.0f)));
-        }
+        this.genes = genes;
         outerWalls = new List<Line>();
         innerWalls = new List<Line>();
-        Vector3[] boundary = footprint.getBoundary();
-        for(int i =0;i<boundary.Length;i++){
-            outerWalls.Add(new Line(boundary[i],boundary[(i+1)%boundary.Length]));
-        }
-
-        
-
     }
-    public void setGenes(List<Vector2> newGenes){
+
+    public RoomPartitioning(Foundation input){
+        int num = Random.Range(1,4);
+        List<Vector2> genes = new List<Vector2>();
+        for(int i=0;i<num;i++){
+            genes.Add(new Vector2(5.0f*Random.Range(-1.0f,1.0f),5.0f*Random.Range(-1.0f,1.0f)));
+        }
+        this.genes = genes;
+        this.footprint = input;
+        outerWalls = new List<Line>();
+        innerWalls = new List<Line>();
+    }
+    public override void setGenes(List<Vector2> newGenes){
         this.genes = newGenes;
     }
 
-    public int getSize(){
+    public void setFootprint(Foundation input){
+        this.footprint = input;
+    }
+
+    public override int getSize(){
         return genes.Count;
     }
-    public void mutateAdd(){
+    public override void mutateAdd(){
         genes.Add(new Vector2(5.0f*Random.Range(0.0f,1.0f),5.0f*Random.Range(0.0f,1.0f)));
 
     }
 
-    public void mutateRemove(){
+    public override void mutateRemove(){
         if(genes.Count>3){
             int purge = Random.Range(0,genes.Count);
             genes.RemoveAt(purge);
         }
     }
 
-    public void mutateChange(float scale){
+    public override void mutateChange(float scale){
         int change = Random.Range(0,genes.Count);
         genes[change] = genes[change] + new Vector2(scale*Random.Range(-1.0f,1.0f),scale*Random.Range(-1.0f,1.0f));
     }
 
-    public bool isPointInside(Vector3 point){
-        int boundSize = footprint.getBoundary().Length;
-        for(int i =0;i<boundSize;i++){
-            Vector3 a = footprint.getBoundary()[(i+1)%boundSize]-footprint.getBoundary()[i];
-            Vector3 b = point-footprint.getBoundary()[i];
-            if(Vector3.Cross(a,b).magnitude <= 0 ){
-                return false;
+    public override RoomPartitioning createOffspring(RoomPartitioning other){
+        List<Vector2> offspringGenes;
+        if(this.getSize()>other.getSize()){
+            offspringGenes = new List<Vector2>(this.genes.ToArray());
+            for(int i=0;i<other.getSize();i++){
+                if(Random.value>0.5f){
+                    offspringGenes[i] = other.genes[i];
+                }
+            }
+        }else{
+            offspringGenes = new List<Vector2>(other.genes.ToArray());
+            for(int i=0;i<this.getSize();i++){
+                if(Random.value>0.5f){
+                    offspringGenes[i] = this.genes[i];
+                }
             }
         }
-        return true;
+
+        RoomPartitioning output = new RoomPartitioning(this.footprint,offspringGenes.GetRange(0,Mathf.Min(5,offspringGenes.Count)));
+        return output;
+
     }
 
     bool needInnerWall(Vector3 c1, Vector3 c2){
@@ -77,20 +95,25 @@ public class RoomPartitioning{
 
     bool visible(Vector3 c1, Vector3 c2){
         bool output = true;
+        float threshold = 0.01f;
         Line testLine = new Line(c1,c2);
         Vector3 _ = new Vector3();
         foreach(Line wall in innerWalls){
             if (testLine.getIntersection(out _,wall)){ 
-               if(_ != c1 && _ != c2){
-                    Debug.Log(string.Format("intersection of {0} and outer wall {1} at {2}",testLine,wall,_));
+               if(!((c1-_).magnitude < threshold) && !((c2-_).magnitude < threshold)){
+                    //Debug.Log(string.Format("intersection of {0} and inner wall {1} at {2}",testLine,wall,_));
                     return false;
                 } 
             }
         }
         foreach(Line wall in outerWalls){
             if (testLine.getIntersection(out _,wall)){
-                if(_ != c1 && _ != c2){
-                    Debug.Log(string.Format("intersection of {0} and outer wall {1} at {2}",testLine,wall,_));
+                if(!((c1-_).magnitude < threshold) && !((c2-_).magnitude < threshold)){
+                    Debug.Log(c1);
+                    Debug.Log(c2);
+                    Debug.Log((c1-_).magnitude < threshold);
+                    Debug.Log((c2-_).magnitude < threshold);
+                    //Debug.Log(string.Format("intersection of {0} and outer wall {1} at {2}",testLine,wall,_));
                     return false;
                 }
             }
@@ -131,10 +154,10 @@ public class RoomPartitioning{
         intersections = intersections.Distinct().ToList();
 
         
-        Debug.Log("Intersections..");
-        foreach(Vector3 i in intersections){
-            Debug.Log(i);
-        }
+        // Debug.Log("Intersections..");
+        // foreach(Vector3 i in intersections){
+        //     Debug.Log(i);
+        // }
 
         List<Vector3> visibleIntersections = new List<Vector3>();
 
@@ -143,35 +166,42 @@ public class RoomPartitioning{
                 visibleIntersections.Add(i);
             }
         }
-        Debug.Log("Visible Intersections..");
-        foreach(Vector3 i in visibleIntersections){
-            Debug.Log(i);
-        }
+        // Debug.Log("Visible Intersections..");
+        // foreach(Vector3 i in visibleIntersections){
+        //     Debug.Log(i);
+        // }
 
         return(new Line(visibleIntersections[0],visibleIntersections[1]));
-    }   
+    }
 
-
-
-    
+    public List<Vector3> getCenters(){
+        List<Vector3> output = new List<Vector3>();
+        foreach(Vector2 i in genes){
+            output.Add(new Vector3(i.x,0,i.y));
+        }
+        return output;
+    }  
 
     public List<List<Vector3>> getPartitions(){
 
-        List<Vector3> boundary = new List<Vector3>(footprint.getBoundary());        
+        List<Vector3> boundary = new List<Vector3>(footprint.getBoundary()); 
+        for(int i =0;i<boundary.Count;i++){
+            outerWalls.Add(new Line(boundary[i],boundary[(i+1)%boundary.Count]));
+        }       
         List<Vector3> centers = new List<Vector3>();
         List<List<Vector3>> output = new List<List<Vector3>>();
 
 
         for(int i =0;i<genes.Count;i++){
             Vector3 point = new Vector3(genes[i].x,0.0f,genes[i].y);
-            if (isPointInside(point)){
+            if (Helpers.isPointInside(point,footprint.getBoundary())){
                 centers.Add(point);                
             }      
         }
-        Debug.Log("centers are...");
-        foreach(Vector3 center in centers){
-            Debug.Log(center);
-        }
+        // Debug.Log("centers are...");
+        // foreach(Vector3 center in centers){
+        //     Debug.Log(center);
+        // }
 
         if(centers.Count <= 1){  
             output.Add(boundary);
@@ -196,15 +226,15 @@ public class RoomPartitioning{
         //     Debug.Log(boundaryPoint);
         // }
 
-        Debug.Log("inner walls..");
-        foreach(Line i in innerWalls){
-            Debug.Log(i);
-        }
+        // Debug.Log("inner walls..");
+        // foreach(Line i in innerWalls){
+        //     Debug.Log(i);
+        // }
 
-         Debug.Log("outer walls..");
-        foreach(Line i in outerWalls){
-            Debug.Log(i);
-        }
+        // Debug.Log("outer walls..");
+        // foreach(Line i in outerWalls){
+        //     Debug.Log(i);
+        // }
 
         
         
@@ -219,13 +249,13 @@ public class RoomPartitioning{
             output.Add(points);
         }
 
-        Debug.Log("Partitions...");
-        foreach(List<Vector3> room in output){
-            Debug.Log("Room Points...");
-            foreach(Vector3 roomPoint in room){
-                Debug.Log(roomPoint);
-            }
-        }
+        // Debug.Log("Partitions...");
+        // foreach(List<Vector3> room in output){
+        //     Debug.Log("Room Points...");
+        //     foreach(Vector3 roomPoint in room){
+        //         Debug.Log(roomPoint);
+        //     }
+        // }
 
         return output;
 
