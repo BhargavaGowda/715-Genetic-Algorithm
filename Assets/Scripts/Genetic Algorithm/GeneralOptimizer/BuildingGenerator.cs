@@ -79,6 +79,7 @@ class BuildingGenerator:MonoBehaviour{
     
     void displayFootprint(Foundation footprint){
         GameObject floor = new GameObject();
+        floor.name = "Footprint";
         floor.transform.parent = gameObject.transform;
         floor.transform.position = new Vector3(0,1,0);
         MeshRenderer meshr = floor.AddComponent<MeshRenderer>();
@@ -90,6 +91,7 @@ class BuildingGenerator:MonoBehaviour{
 
     void displayLot(){
         GameObject lotDis = new GameObject();
+        lotDis.name = "Lot";
         lotDis.transform.parent = gameObject.transform;
         MeshRenderer meshr = lotDis.AddComponent<MeshRenderer>();
         MeshFilter meshf = lotDis.AddComponent<MeshFilter>();
@@ -100,6 +102,7 @@ class BuildingGenerator:MonoBehaviour{
 
     void displayRooms(RoomPartitioning partitioning){
         GameObject partitionsContainer = new GameObject();
+        partitionsContainer.name = "Rooms";
         partitionsContainer.transform.parent = gameObject.transform;
         partitionsContainer.transform.position = new Vector3(0,2,0);
         List<List<Vector3>> rooms = partitioning.getPartitions();
