@@ -6,7 +6,6 @@ using UnityEngine;
 class BuildingGenerator:MonoBehaviour{
 
     public List<Vector3> lot;
-    List<List<Vector3>> rooms;
     public int popSize = 10;
     public float mutateAdd = 0.1f;
     public float mutateRemove = 0.1f;
@@ -25,13 +24,11 @@ class BuildingGenerator:MonoBehaviour{
         displayFootprint(footprint);
         //Debug.Log(new LotPointsConstraint(lot).getScore(footprint));
         RoomPartitioning partitioning = getPartitioning(footprint);
-        rooms = partitioning.getPartitions();
         displayRooms(partitioning);
+		displayOuterWalls(footprint);
 
 
     }
-
-    
 
     Foundation getFootprint(){
         List<Constraint<Foundation>> footprintConstraints = new List<Constraint<Foundation>>();
@@ -122,4 +119,57 @@ class BuildingGenerator:MonoBehaviour{
             meshr.material.SetColor("_Color",Color.HSVToRGB(i*1f/rooms.Count,1,1));
         }
     }
+	
+	void displayOuterWalls(Foundation footprint){
+
+		List<Vector3> vertices = footprint.getBoundary();
+		string result = "List contents: ";
+		Vector3 position2;
+		Vector3 position;
+		foreach (var item in vertices)
+		{
+			result += item.ToString() + ", ";
+		}
+		Debug.Log(result);
+		//vertices = new Vector3{Vector3(0f,0f,0f),Vector3(5f,5f,5f)};
+		for (int i=0; i<vertices.Count;i++){
+			//find random point inside the bouding box
+			Vector3 positiono = vertices[i] + new Vector3(0f,2f,0);
+			GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			sphere.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+			sphere.transform.position = positiono;
+		}
+		
+		float rotato;
+		for (int i=0; i<vertices.Count;i++){
+		//find random point inside the bouding box
+
+			if (i==vertices.Count-1){
+				position2 = vertices[0];
+				position = vertices[i];
+			}
+			else{
+				position2 = vertices[i+1];
+				position = vertices[i];
+			}
+			
+			Vector3 between = position2 - position;
+			Debug.Log(between);
+			float distance = between.magnitude;
+			Debug.Log(distance);
+			GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Cube);
+			sphere.GetComponent<Renderer>().material.color = Color.cyan;
+			sphere.transform.localScale = new Vector3(distance, 2.5f, 0.25f);
+			//sphere.transform.LookAt(position2);
+			rotato = Mathf.Acos(Mathf.Abs(position.x-position2.x)/distance)* 180/Mathf.PI;
+			Debug.Log(rotato);
+			sphere.transform.Rotate(0,rotato,0);
+			sphere.transform.position = position + (between/2);
+			
+			//sphere.transform.rotation = Quaternion.LookRotation(position);
+			
+			sphere.transform.position += new Vector3(0f,3.5f,0);
+			//sphere.transform.position = position + new Vector3(0f,2f,0);
+		}
+	}
 }
