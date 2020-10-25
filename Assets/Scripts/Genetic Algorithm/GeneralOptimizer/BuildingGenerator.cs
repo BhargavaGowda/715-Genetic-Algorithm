@@ -121,55 +121,34 @@ class BuildingGenerator:MonoBehaviour{
     }
 	
 	void displayOuterWalls(Foundation footprint){
-
 		List<Vector3> vertices = footprint.getBoundary();
-		string result = "List contents: ";
 		Vector3 position2;
 		Vector3 position;
-		foreach (var item in vertices)
-		{
-			result += item.ToString() + ", ";
-		}
-		Debug.Log(result);
-		//vertices = new Vector3{Vector3(0f,0f,0f),Vector3(5f,5f,5f)};
-		for (int i=0; i<vertices.Count;i++){
-			//find random point inside the bouding box
-			Vector3 positiono = vertices[i] + new Vector3(0f,2f,0);
-			GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-			sphere.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-			sphere.transform.position = positiono;
-		}
-		
 		float rotato;
 		for (int i=0; i<vertices.Count;i++){
-		//find random point inside the bouding box
-
 			if (i==vertices.Count-1){
-				position2 = vertices[0];
 				position = vertices[i];
+				position2 = vertices[0];
 			}
 			else{
-				position2 = vertices[i+1];
 				position = vertices[i];
+				position2 = vertices[i+1];
 			}
-			
 			Vector3 between = position2 - position;
-			Debug.Log(between);
 			float distance = between.magnitude;
-			Debug.Log(distance);
-			GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Cube);
-			sphere.GetComponent<Renderer>().material.color = Color.cyan;
-			sphere.transform.localScale = new Vector3(distance, 2.5f, 0.25f);
-			//sphere.transform.LookAt(position2);
-			rotato = Mathf.Acos(Mathf.Abs(position.x-position2.x)/distance)* 180/Mathf.PI;
-			Debug.Log(rotato);
-			sphere.transform.Rotate(0,rotato,0);
-			sphere.transform.position = position + (between/2);
-			
-			//sphere.transform.rotation = Quaternion.LookRotation(position);
-			
-			sphere.transform.position += new Vector3(0f,3.5f,0);
-			//sphere.transform.position = position + new Vector3(0f,2f,0);
+			GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+			wall.name = "Outer Wall";
+			//wall.GetComponent<Renderer>().material.mainTexture = myTexture;
+			wall.transform.localScale = new Vector3(distance, 2.5f, 0.1f);
+			if (position.z>=position2.z){
+				rotato = Mathf.Acos((position2.x-position.x)/distance)* 180/Mathf.PI;
+			}
+			else{
+				rotato = Mathf.Acos((position.x-position2.x)/distance)* 180/Mathf.PI;
+			}
+			wall.transform.Rotate(0,rotato,0);
+			wall.transform.position = position + (between/2);
+			wall.transform.position += new Vector3(0f,3.25f,0);
 		}
 	}
 }
