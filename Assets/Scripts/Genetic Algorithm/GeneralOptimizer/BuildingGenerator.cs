@@ -25,9 +25,6 @@ class BuildingGenerator:MonoBehaviour{
         //Debug.Log(new LotPointsConstraint(lot).getScore(footprint));
         RoomPartitioning partitioning = getPartitioning(footprint);
         displayRooms(partitioning);
-		displayOuterWalls(footprint);
-
-
     }
 
     Foundation getFootprint(){
@@ -97,6 +94,7 @@ class BuildingGenerator:MonoBehaviour{
         MeshRenderer meshr = lotDis.AddComponent<MeshRenderer>();
         MeshFilter meshf = lotDis.AddComponent<MeshFilter>();
         meshf.mesh = Helpers.triangulate(this.lot);
+		//meshr.material.mainTexture = (Texture2D)Resources.Load("grassy");
         meshr.material.SetColor("_Color",Color.white);
 
     }
@@ -109,6 +107,7 @@ class BuildingGenerator:MonoBehaviour{
         List<List<Vector3>> rooms = partitioning.getPartitions();
         List<GameObject> roomObjects = new List<GameObject>();
         for(int i = 0;i<rooms.Count;i++){
+			displayWalls(Helpers.reorder(rooms[i]));
             GameObject room = new GameObject();
             room.name = string.Format("Room {0}",i+1);
             room.transform.parent = partitionsContainer.transform;
@@ -120,10 +119,12 @@ class BuildingGenerator:MonoBehaviour{
         }
     }
 	
-	void displayOuterWalls(Foundation footprint){
-		List<Vector3> vertices = footprint.getBoundary();
-		Vector3 position2;
+	void displayWalls(List<Vector3> vertices){
+		GameObject partitionsContainer = new GameObject();
+        partitionsContainer.name = "Room Walls";
+        partitionsContainer.transform.parent = gameObject.transform;
 		Vector3 position;
+		Vector3 position2;
 		float rotato;
 		for (int i=0; i<vertices.Count;i++){
 			if (i==vertices.Count-1){
@@ -137,9 +138,13 @@ class BuildingGenerator:MonoBehaviour{
 			Vector3 between = position2 - position;
 			float distance = between.magnitude;
 			GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-			wall.name = "Outer Wall";
-			//wall.GetComponent<Renderer>().material.mainTexture = myTexture;
-			wall.transform.localScale = new Vector3(distance, 2.5f, 0.1f);
+			wall.name = "Wall";
+			wall.transform.parent = partitionsContainer.transform;
+
+			//wall.GetComponent<Renderer>().material.mainTexture = (Texture2D)Resources.Load("brick");
+			
+			wall.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+			wall.transform.localScale = new Vector3(distance, 2f, 0.1f);
 			if (position.z>=position2.z){
 				rotato = Mathf.Acos((position2.x-position.x)/distance)* 180/Mathf.PI;
 			}
@@ -148,7 +153,7 @@ class BuildingGenerator:MonoBehaviour{
 			}
 			wall.transform.Rotate(0,rotato,0);
 			wall.transform.position = position + (between/2);
-			wall.transform.position += new Vector3(0f,3.25f,0);
+			wall.transform.position += new Vector3(0f,3f,0);
 		}
 	}
 }
