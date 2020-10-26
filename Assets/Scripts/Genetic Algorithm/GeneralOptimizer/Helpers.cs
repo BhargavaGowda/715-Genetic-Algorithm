@@ -40,7 +40,7 @@ public static class Helpers{
         return area;
     }
 
-    public static Mesh triangulate(List<Vector3> verts){
+    public static Mesh triangulateCorner(List<Vector3> verts){
 
         int trisnum = 3*(verts.Count-2);
         int[] tris = new int[trisnum];
@@ -63,25 +63,66 @@ public static class Helpers{
         return mesh;
     }
 
+    public static Mesh triangulate(List<Vector3> verts){
+        int trisnum = 3*verts.Count;
+        int[] tris = new int[trisnum];
+        verts.Add(getCenter(verts));
+        
+        for(int i =0;i<verts.Count-1;i++){
+            int orig=verts.Count-1;
+            int old = i;
+            int newp = (i+1)%(verts.Count-1);
+
+            tris[3*i] = orig;
+            tris[3*i+1] = old;
+            tris[3*i+2] = newp;
+        }
+        
+        Mesh mesh = new Mesh();
+        mesh.vertices = verts.ToArray();
+        mesh.triangles = tris;
+        mesh.RecalculateNormals();
+
+        return mesh;
+
+    }
+
     public static List<Vector3> reorder(List<Vector3> points){
         List<Vector3> output = new List<Vector3>(points.ToArray());
+        Vector3 center = getCenter(points);
         bool redo = true;
-        Vector3 orig = output[0];
         while(redo){
             redo = false;
-            for(int i =1;i<output.Count-1;i++){
-                Vector3 a = output[i]-orig;
-                Vector3 b = output[i+1]-orig;
+            for(int i =0;i<output.Count;i++){
+                Vector3 a = output[i]-center;
+                Vector3 b = output[(i+1)%output.Count]-center;
                 if(Vector3.Dot(Vector3.Cross(a,b),new Vector3(0,1,0))<0){
                     
                     redo = true;
-                    output[i] = b+orig;
-                    output[i+1] = a+orig;
+                    output[i] = b+center;
+                    output[(i+1)%output.Count] = a+center;
                 }
             }
         }
 
         return output;
+    }
+
+    public static Vector3 getCenter(List<Vector3> points){
+        Vector3 center = new Vector3(0,0,0);
+        foreach(Vector3 i in points){
+            center = center+i;
+        }
+        return center/points.Count;
+
+    }
+
+    public static Vector3 getCenter(List<Vector2> points){
+        Vector3 center = new Vector3(0,0,0);
+        foreach(Vector3 i in points){
+            center = center+ new Vector3(i.x,0,i.y);
+        }
+        return center/points.Count;
 
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Foundation:Gene<Foundation>{
@@ -45,13 +46,15 @@ public class Foundation:Gene<Foundation>{
 
     public override Foundation createOffspring(Foundation otherParent){
         Foundation child = new Foundation();
-        child.genes = new List<Vector2>(this.genes);
-        for(int i = 0;i<child.genes.Count;i++){
+        List<Vector2> childGenes = new List<Vector2>(this.genes);
+        for(int i = 0;i<childGenes.Count;i++){
             if(Random.value > 0.5f){
                 int swap = Mathf.Min(i,otherParent.genes.Count-1);
-                child.genes[i] = otherParent.genes[swap];
+                childGenes[i] = otherParent.genes[swap];
             }
         }
+
+        child.genes = childGenes;
 
         // Debug.Log(string.Join(",", this.genes));
         // Debug.Log(string.Join(",", otherParent.genes));

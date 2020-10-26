@@ -86,6 +86,10 @@ class BuildingGenerator:MonoBehaviour{
     }
     
     void displayFootprint(Foundation footprint){
+        Debug.Log("Footprint points:");
+        for(int i =0;i<footprint.genes.Count;i++){
+            Debug.Log(footprint.genes[i]);
+        }
         GameObject floor = new GameObject();
         floor.name = "Footprint";
         floor.transform.parent = gameObject.transform;
@@ -110,6 +114,10 @@ class BuildingGenerator:MonoBehaviour{
     }
 
     void displayRooms(RoomPartitioning partitioning){
+        Debug.Log("room points:");
+        for(int i =0;i<partitioning.genes.Count;i++){
+            Debug.Log(partitioning.genes[i]);
+        }
         GameObject partitionsContainer = new GameObject();
         partitionsContainer.name = "Rooms";
         partitionsContainer.transform.parent = gameObject.transform;

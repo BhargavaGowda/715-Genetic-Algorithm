@@ -250,13 +250,13 @@ public class RoomPartitioning:Gene<RoomPartitioning>{
             output.Add(points);
         }
 
-        // Debug.Log("Partitions...");
-        // foreach(List<Vector3> room in output){
-        //     Debug.Log("Room Points...");
-        //     foreach(Vector3 roomPoint in room){
-        //         Debug.Log(roomPoint);
-        //     }
-        // }
+        Debug.Log("Partitions...");
+        foreach(List<Vector3> room in output){
+            Debug.Log("Room Points...");
+            foreach(Vector3 roomPoint in room){
+                Debug.Log(roomPoint);
+            }
+        }
 
         return output;
 
