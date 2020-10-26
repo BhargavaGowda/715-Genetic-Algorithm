@@ -7,68 +7,22 @@ public class tests2 : MonoBehaviour{
     public List<Vector3> lotPoints;
 
     void Start(){
+        List<Vector3> testBound = new List<Vector3>{
+            new Vector3(9,0,8.1f),
+            new Vector3(3.9f,0,9.3f),
+            new Vector3(1.8f,0,0.9f),
+            new Vector3(6.5f,0,0.1f),
+        };
+        Vector2 testPoint = new Vector2(3.4f,4.1f);
 
-        // List<Foundation> testFootprints = new List<Foundation>();
-        // List<Constraint<Foundation>> cons = new List<Constraint<Foundation>>();
+        GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        
+        plane.GetComponent<MeshFilter>().mesh = Helpers.triangulate(testBound);
+        GameObject point = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        point.transform.position = new Vector3(testPoint.x,0,testPoint.y);
 
-        // for(int i = 0;i<10;i++){
-        //     testFootprints.Add(new Foundation());
-        // }
-        // cons.Add(new FloorSmoothConstraint());
-        // cons.Add(new FloorOrientationConstraint());
-        // cons.Add(new LotCoverageConstraint(lotPoints));
-
-        // Optimizer<Foundation> optimizer = new Optimizer<Foundation>(
-        //     testFootprints,
-        //     cons,
-        //     100,
-        //     0.1f,
-        //     0.1f,
-        //     0.1f,
-        //     1
-        // );
-
-        // Foundation output = optimizer.getOptimizedResult();
-
-        // List<RoomPartitioning> testRooms = new List<RoomPartitioning>();
-        // List<Constraint<RoomPartitioning>> cons2 = new List<Constraint<RoomPartitioning>>();
-
-        // for(int i = 0;i<10;i++){
-        //     testRooms.Add(new RoomPartitioning(output));
-        // }
-        // cons2.Add(new AreaProportionConstraint());
-       
-
-        // Optimizer<RoomPartitioning> optimizer2 = new Optimizer<RoomPartitioning>(
-        //     testRooms,
-        //     cons2,
-        //     100,
-        //     0.1f,
-        //     0.1f,
-        //     0.1f,
-        //     1
-        // );
-
-        // RoomPartitioning bestPartitions = optimizer2.getOptimizedResult();
-
-        // List<List<Vector3>> partitions = bestPartitions.getPartitions();
-
-        // GameObject floor = new GameObject();
-        // floor.transform.parent = gameObject.transform;
-        // floor.AddComponent<MeshRenderer>();
-        // MeshFilter meshf = floor.AddComponent<MeshFilter>();
-        // meshf.mesh = Helpers.triangulate(output.getBoundary());
-
-        // GameObject rooms = new GameObject();
-        // rooms.transform.parent = gameObject.transform;
-        // for(int i = 0;i<partitions.Count;i++){
-        //     GameObject room = new GameObject();
-            
-        // }
-
-
-
-
+        Debug.Log(Helpers.isPointInside(testPoint,testBound));
+        
 
     }
         

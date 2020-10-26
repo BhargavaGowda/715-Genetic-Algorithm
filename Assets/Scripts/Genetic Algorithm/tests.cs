@@ -12,26 +12,28 @@ public class tests : MonoBehaviour
     void Start()
     {
        lot = new List<Vector3>{new Vector3(0,0,0),new Vector3(0,0,10),new Vector3(10,0,10), new Vector3(10,0,0)};
+    //    List<Vector2> floorGenes = new List<Vector2>{new Vector3(0,0),new Vector3(0,5),new Vector3(5,5), new Vector3(5,0)};
        Foundation footprint = new Foundation(lot);
-       RoomPartitioning rooms = new RoomPartitioning(footprint);
-       roomPoints = rooms.genes;
-       AreaProportionConstraint con = new AreaProportionConstraint();
-       Debug.Log(con.getScore(rooms));
+    //    footprint.genes.Add(Helpers.getRandomPointInBoundary(footprint.lot));
+    //    RoomPartitioning rooms = new RoomPartitioning(footprint);
+    //    roomPoints = rooms.genes;
+       FloorBlockyConstraint con = new FloorBlockyConstraint();
+       Debug.Log(con.getScore(footprint));
        displayLot();
        displayFootprint(footprint);
-       displayRooms(rooms);
+    //    displayRooms(rooms);
 
 
     }
-    void OnDrawGizmosSelected(){
+    // void OnDrawGizmosSelected(){
         
-        for(int i =0;i<roomPoints.Count;i++){
-            Vector2 pos = roomPoints[i];
-            Gizmos.color = Color.HSVToRGB(i*1f/roomPoints.Count,1,1);
-            Gizmos.DrawSphere(new Vector3(pos.x,2,pos.y),0.1f);
-        }
+    //     for(int i =0;i<roomPoints.Count;i++){
+    //         Vector2 pos = roomPoints[i];
+    //         Gizmos.color = Color.HSVToRGB(i*1f/roomPoints.Count,1,1);
+    //         Gizmos.DrawSphere(new Vector3(pos.x,2,pos.y),0.1f);
+    //     }
         
-    }
+    // }
 
     void displayLot(){
         GameObject lotDis = new GameObject();
@@ -73,7 +75,7 @@ public class tests : MonoBehaviour
         List<List<Vector3>> rooms = partitioning.getPartitions();
         List<GameObject> roomObjects = new List<GameObject>();
         for(int i = 0;i<rooms.Count;i++){
-			displayWalls(Helpers.reorder(rooms[i]));
+			//displayWalls(Helpers.reorder(rooms[i]));
             GameObject room = new GameObject();
             room.name = string.Format("Room {0}",i+1);
             room.transform.parent = partitionsContainer.transform;

@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 public static class Helpers{
 
-    static int maxIter = 20;
+    static int maxIter = 100;
     public static bool isPointInside(Vector3 point, List<Vector3> boundary){
+        boundary = reorder(boundary);
         int boundSize = boundary.Count;
         for(int i =0;i<boundSize;i++){
             Vector3 a = boundary[(i+1)%boundSize]-boundary[i];
@@ -18,6 +19,7 @@ public static class Helpers{
     }
 
     public static bool isPointInside(Vector2 point2d, List<Vector3> boundary){
+        boundary = reorder(boundary);
         Vector3 point = new Vector3(point2d.x,0,point2d.y);
         int boundSize = boundary.Count;
         for(int i =0;i<boundSize;i++){
@@ -94,8 +96,10 @@ public static class Helpers{
         List<Vector3> output = new List<Vector3>(points.ToArray());
         Vector3 center = getCenter(points);
         bool redo = true;
+        int counter = 0;
         while(redo){
             redo = false;
+            counter +=1;
             for(int i =0;i<output.Count;i++){
                 Vector3 a = output[i]-center;
                 Vector3 b = output[(i+1)%output.Count]-center;
@@ -105,6 +109,10 @@ public static class Helpers{
                     output[i] = b+center;
                     output[(i+1)%output.Count] = a+center;
                 }
+            }
+            if (counter>maxIter){
+                Debug.Log("reorder failed.");
+                return output;
             }
         }
 
@@ -144,23 +152,21 @@ public static class Helpers{
     }
 
     public static Vector2 getRandomPointInBoundary(List<Vector3> boundary){
-        float minX = boundary.Select(boundaryPoint => boundaryPoint.x).Min();
-        float maxX = boundary.Select(boundaryPoint => boundaryPoint.x).Max();
-        float minZ = boundary.Select(boundaryPoint => boundaryPoint.z).Min();
-        float maxZ = boundary.Select(boundaryPoint => boundaryPoint.z).Max();
-        Vector2 output = new Vector2(Random.Range(minX,maxX),Random.Range(minZ,maxZ));
-        int counter = 0;
-
-
-        while(!isPointInside(output,boundary)){
-            output = new Vector2(Random.Range(minX,maxX),Random.Range(minZ,maxZ));
-            counter+=1;
-            if(counter > maxIter){
-                Vector3 center = getCenter(boundary);
-                return(new Vector2(center.x,center.z));
+        Vector3 center = getCenter(boundary);
+        
+        float minDist = (boundary[0]-center).magnitude;
+        foreach(Vector3 i in boundary){
+            if((i-center).magnitude < minDist){
+                minDist = (i-center).magnitude;
             }
         }
+        float angle = Random.Range(0f,2*Mathf.PI);
+        float dist = Random.Range(0f,minDist)/2;
 
-        return(output);
+        Vector2 offset = new Vector2(dist*Mathf.Cos(angle),dist*Mathf.Sin(angle));
+
+        Vector2 output = offset + new Vector2(center.x,center.z);
+        return output;
+        
     }
 }

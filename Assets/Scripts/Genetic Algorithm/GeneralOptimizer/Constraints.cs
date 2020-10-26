@@ -9,7 +9,7 @@ abstract public class Constraint<T>{
 public class FloorRegularizationConstraint:Constraint<Foundation>{
     public override float getScore(Foundation input)
     {
-        return (float)Mathf.Clamp(1f-0.2f*input.genes.Count,-1f,1f);
+        return (float)Mathf.Clamp(-0.1f*input.genes.Count,-1f,1f);
     
     }
 }
@@ -39,6 +39,32 @@ public class FloorSmoothConstraint:Constraint<Foundation>{
     }
 }
 
+public class FloorBlockyConstraint:Constraint<Foundation>{
+    public override float getScore(Foundation input)
+    {
+        List<Vector3> boundary = Helpers.reorder(input.getBoundary());
+        float score = 0f;
+        for(int i =0; i<boundary.Count;i++){
+            Vector3 a = boundary[(i+1)%boundary.Count]-boundary[i];
+            Vector3 b = new Vector3(1,0,0);
+            score+=getAngleScore(Vector3.Angle(a,b));
+        }
+
+        return score/boundary.Count;        
+
+    }
+
+    public float getAngleScore(float angle){
+        float angleMod = angle%90;
+        if(Mathf.Abs(angleMod-90)<5){
+            return 1f;
+        }
+        if(Mathf.Abs(angleMod)<5){
+           return 1f;
+        }
+        return Mathf.Max(Mathf.Cos(angleMod),Mathf.Sin(angleMod))/2;
+    }
+}
 public class FloorOrientationConstraint:Constraint<Foundation>{
 
     public override float getScore(Foundation floor){
@@ -66,35 +92,6 @@ public class FloorOrientationConstraint:Constraint<Foundation>{
         return score/(float)(floor.genes.Count-2);      
     }
 }
-
-public class LotPointsConstraint:Constraint<Foundation>{
-    List<Vector3> lotPoints;
-
-    public LotPointsConstraint(List<Vector3> lotPoints){
-        this.lotPoints = lotPoints;
-    }
-
-    public override float getScore(Foundation input)
-    {
-        List<Vector3> verts = input.getBoundary();
-        // if(!Helpers.isPointInside(verts[0],lotPoints)){
-        //     return -1f;
-        // }
-
-        float score = 0f;
-        foreach(Vector3 i in verts){
-            if(Helpers.isPointInside(i,lotPoints)){
-                score+=1f;
-            }else{
-                score-=1f;
-            }
-        }
-
-        return score/verts.Count;
-    }
-
-}
-
 public class LotCoverageConstraint:Constraint<Foundation>{
 
     List<Vector3> lotPoints;
@@ -119,38 +116,23 @@ public class LotCoverageConstraint:Constraint<Foundation>{
             int old = i+1;
             int newp = i+2;
 
-            if(
-                Helpers.isPointInside(verts[orig],lotPoints) && 
-                Helpers.isPointInside(verts[old],lotPoints) && 
-                Helpers.isPointInside(verts[newp],lotPoints)
-            ){
-                Vector3 oldVec = verts[old] - verts[orig];
-                Vector3 newVec = verts[newp] - verts[orig];
-                area += 0.5f * Vector3.Cross(oldVec,newVec).magnitude; 
-            }      
+            Vector3 oldVec = verts[old] - verts[orig];
+            Vector3 newVec = verts[newp] - verts[orig];
+            area += 0.5f * Vector3.Cross(oldVec,newVec).magnitude; 
+                  
         }
-        //Debug.Log(string.Format("Footprint Area is {0}",area));     
-        return area/lotArea;
+        //Debug.Log(string.Format("Footprint Area is {0}",area)); 
+        float output =  Mathf.Clamp(area/lotArea,0f,1f);
+        return output*2 -1;
     }
 }
 
-public class CenterPositionConstraint:Constraint<RoomPartitioning>{
-    Foundation footprint;
+public class RoomsRegularizationConstraint:Constraint<RoomPartitioning>{
 
-    public override float getScore(RoomPartitioning partitioning){
-        this.footprint = partitioning.footprint;
-        List<Vector3> centers = partitioning.getCenters();
-        float score = 0f;
-        foreach(Vector3 i in centers){
-            if(Helpers.isPointInside(i,footprint.getBoundary())){
-                score+=1f;
-            }else{
-                score-=1f;
-            }
-        }
-
-        return score/centers.Count;
-        
+    public override float getScore(RoomPartitioning input)
+    {
+        return (float)Mathf.Clamp(-0.1f*input.genes.Count,-1f,1f);
+    
     }
 
 }
@@ -161,6 +143,9 @@ public class AreaProportionConstraint:Constraint<RoomPartitioning>{
     public override float getScore(RoomPartitioning partitioning){
         this.footprint = partitioning.footprint;
         List<List<Vector3>> rooms = partitioning.getPartitions();
+        if(rooms.Count==1){
+            return 0f;
+        }
         float score = 1f;
         float proportion = 1f/rooms.Count;
         float totalArea = Helpers.getArea(footprint.getBoundary());

@@ -335,10 +335,10 @@ MonoBehaviour:
   - {x: 10, y: 0, z: 10}
   - {x: 10, y: 0, z: 0}
   popSize: 50
-  mutateAdd: 0.2
+  mutateAdd: 0.3
   mutateRemove: 0.1
   mutateChange: 0.2
-  mutateScale: 2
+  mutateScale: 3
   iter: 200
 --- !u!4 &1698928453
 Transform:

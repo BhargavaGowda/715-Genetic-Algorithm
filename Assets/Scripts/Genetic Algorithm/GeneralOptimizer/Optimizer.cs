@@ -38,7 +38,7 @@ class Optimizer<T> where T:Gene<T>{
             score+=constraints[i].getScore(individual);
         }
 
-        return score;
+        return score/constraints.Count;
     }
     void iterate(){
         List<T> sorted = population.OrderBy(i => -1*applyConstraints(i)).ToList<T>();

@@ -32,15 +32,14 @@ class BuildingGenerator:MonoBehaviour{
         displayLot();        
         Foundation footprint = getFootprint();
         displayFootprint(footprint);
-        FloorRegularizationConstraint con = new FloorRegularizationConstraint();
-        //Debug.Log(con.getScore(footprint));
-        bestRooms = getPartitioning(footprint);
-        displayRooms(bestRooms);
+        // bestRooms = getPartitioning(footprint);
+        // displayRooms(bestRooms);
     }
 
     Foundation getFootprint(){
         List<Constraint<Foundation>> footprintConstraints = new List<Constraint<Foundation>>();
-        footprintConstraints.Add(new FloorSmoothConstraint());
+        // footprintConstraints.Add(new FloorBlockyConstraint());
+        footprintConstraints.Add(new FloorOrientationConstraint());
         footprintConstraints.Add(new LotCoverageConstraint(lot));
         footprintConstraints.Add(new FloorRegularizationConstraint());
 
@@ -65,6 +64,7 @@ class BuildingGenerator:MonoBehaviour{
     RoomPartitioning getPartitioning(Foundation footprint){
         List<Constraint<RoomPartitioning>> roomConstraints = new List<Constraint<RoomPartitioning>>();
         roomConstraints.Add(new AreaProportionConstraint());
+        roomConstraints.Add(new RoomsRegularizationConstraint());
         List<RoomPartitioning> seedPop = new List<RoomPartitioning>();
         for(int i =0;i<popSize;i++){
             seedPop.Add(new RoomPartitioning(footprint));
