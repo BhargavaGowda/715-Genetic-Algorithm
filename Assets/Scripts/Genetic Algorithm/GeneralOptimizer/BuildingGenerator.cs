@@ -32,7 +32,6 @@ class BuildingGenerator:MonoBehaviour{
         displayLot();        
         Foundation footprint = getFootprint();
         displayFootprint(footprint);
-        //Debug.Log(new LotPointsConstraint(lot).getScore(footprint));
         bestRooms = getPartitioning(footprint);
         displayRooms(bestRooms);
     }
@@ -40,13 +39,12 @@ class BuildingGenerator:MonoBehaviour{
     Foundation getFootprint(){
         List<Constraint<Foundation>> footprintConstraints = new List<Constraint<Foundation>>();
         footprintConstraints.Add(new FloorSmoothConstraint());
-        footprintConstraints.Add(new FloorOrientationConstraint());
         footprintConstraints.Add(new LotCoverageConstraint(lot));
-        footprintConstraints.Add(new LotPointsConstraint(lot));
+        //footprintConstraints.Add(new LotPointsConstraint(lot));
 
         List<Foundation> seedPop = new List<Foundation>();
         for(int i =0;i<popSize;i++){
-            seedPop.Add(new Foundation());
+            seedPop.Add(new Foundation(lot));
         }
         Optimizer<Foundation> footprintOptimizer = new Optimizer<Foundation>(
             seedPop,
@@ -86,10 +84,10 @@ class BuildingGenerator:MonoBehaviour{
     }
     
     void displayFootprint(Foundation footprint){
-        Debug.Log("Footprint points:");
-        for(int i =0;i<footprint.genes.Count;i++){
-            Debug.Log(footprint.genes[i]);
-        }
+        // Debug.Log("Footprint points:");
+        // for(int i =0;i<footprint.genes.Count;i++){
+        //     Debug.Log(footprint.genes[i]);
+        // }
         GameObject floor = new GameObject();
         floor.name = "Footprint";
         floor.transform.parent = gameObject.transform;
@@ -114,10 +112,10 @@ class BuildingGenerator:MonoBehaviour{
     }
 
     void displayRooms(RoomPartitioning partitioning){
-        Debug.Log("room points:");
-        for(int i =0;i<partitioning.genes.Count;i++){
-            Debug.Log(partitioning.genes[i]);
-        }
+        // Debug.Log("room points:");
+        // for(int i =0;i<partitioning.genes.Count;i++){
+        //     Debug.Log(partitioning.genes[i]);
+        // }
         GameObject partitionsContainer = new GameObject();
         partitionsContainer.name = "Rooms";
         partitionsContainer.transform.parent = gameObject.transform;

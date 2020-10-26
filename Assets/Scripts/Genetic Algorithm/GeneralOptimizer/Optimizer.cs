@@ -25,6 +25,8 @@ class Optimizer<T> where T:Gene<T>{
     public T getOptimizedResult(){
         for(int i =0;i<iterations;i++){
             iterate();
+            float score = applyConstraints(population.OrderBy(j => -1*applyConstraints(j)).ElementAt(0));
+            Debug.Log(score);
             // Debug.Log("iteration: " + i);
         }
         return population.OrderBy(i => -1*applyConstraints(i)).ElementAt(0);

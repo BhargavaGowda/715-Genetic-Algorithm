@@ -11,6 +11,9 @@ public class FloorSmoothConstraint:Constraint<Foundation>{
     public override float getScore(Foundation floor){
         float score = 0.0f;
         List<Vector3> verts = floor.getBoundary();
+        if(verts.Count<3){
+            return 0f;
+        }
         Vector3 vec1 = verts[1]-verts[0];
         Vector3 vec2 = verts[verts.Count-1]-verts[0];
 
@@ -33,6 +36,9 @@ public class FloorOrientationConstraint:Constraint<Foundation>{
 
     public override float getScore(Foundation floor){
         List<Vector3> verts = floor.getBoundary();
+        if(verts.Count<3){
+            return 0f;
+        }
         float score = 0f;
         for(int i =0;i<floor.genes.Count-2;i++){
             int orig=0;
@@ -64,9 +70,9 @@ public class LotPointsConstraint:Constraint<Foundation>{
     public override float getScore(Foundation input)
     {
         List<Vector3> verts = input.getBoundary();
-        if(!Helpers.isPointInside(verts[0],lotPoints)){
-            return -1f;
-        }
+        // if(!Helpers.isPointInside(verts[0],lotPoints)){
+        //     return -1f;
+        // }
 
         float score = 0f;
         foreach(Vector3 i in verts){
@@ -85,6 +91,7 @@ public class LotPointsConstraint:Constraint<Foundation>{
 public class LotCoverageConstraint:Constraint<Foundation>{
 
     List<Vector3> lotPoints;
+    
 
     public LotCoverageConstraint(List<Vector3> lotPoints){
         this.lotPoints = lotPoints;
@@ -96,6 +103,9 @@ public class LotCoverageConstraint:Constraint<Foundation>{
         float lotArea = Helpers.getArea(lotPoints);
         //Debug.Log(string.Format("Lot Area is {0}",lotArea));
         List<Vector3> verts = footprint.getBoundary();
+        if(verts.Count<3){
+            return 0f;
+        }
 
         for(int i =0;i<verts.Count-2;i++){
             int orig=0;

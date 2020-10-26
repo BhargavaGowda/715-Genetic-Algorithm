@@ -22,7 +22,7 @@ public class RoomPartitioning:Gene<RoomPartitioning>{
         int num = Random.Range(1,4);
         List<Vector2> genes = new List<Vector2>();
         for(int i=0;i<num;i++){
-            genes.Add(new Vector2(5.0f*Random.Range(-1.0f,1.0f),5.0f*Random.Range(-1.0f,1.0f)));
+            genes.Add(Helpers.getRandomPointInBoundary(input.getBoundary()));
         }
         this.genes = genes;
         this.footprint = input;
@@ -250,13 +250,13 @@ public class RoomPartitioning:Gene<RoomPartitioning>{
             output.Add(points);
         }
 
-        Debug.Log("Partitions...");
-        foreach(List<Vector3> room in output){
-            Debug.Log("Room Points...");
-            foreach(Vector3 roomPoint in room){
-                Debug.Log(roomPoint);
-            }
-        }
+        // Debug.Log("Partitions...");
+        // foreach(List<Vector3> room in output){
+        //     Debug.Log("Room Points...");
+        //     foreach(Vector3 roomPoint in room){
+        //         Debug.Log(roomPoint);
+        //     }
+        // }
 
         return output;
 

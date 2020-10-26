@@ -5,32 +5,39 @@ using System.Linq;
 
 public class tests : MonoBehaviour
 {
+    List<Vector3> lot;
 
     List<Vector2> roomPoints;
     // Start is called before the first frame update
     void Start()
     {
-        List<Vector2> floorPoints = new List<Vector2> {new Vector2(3.6f,9.7f),new Vector2(10f,2.3f), new Vector2(2.7f,0.1f),
-        new Vector2(0f,4.7f)};
-        roomPoints = new List<Vector2> {new Vector2(4.3f,1.6f),new Vector2(4.3f,7.1f), new Vector2(2.9f,3.2f),
-        new Vector2(1.4f,4.6f)};
-        // roomPoints = new List<Vector2> {new Vector2(1.4f,4.6f)};
+       lot = new List<Vector3>{new Vector3(0,0,0),new Vector3(0,0,10),new Vector3(10,0,10), new Vector3(10,0,0)};
+       Foundation footprint = new Foundation(lot);
+       displayLot();
+       displayFootprint(footprint);
 
-        Foundation footprint = new Foundation(floorPoints);
-        RoomPartitioning rooms = new RoomPartitioning(footprint,roomPoints);
-
-        displayFootprint(footprint);
-        displayRooms(rooms);
 
     }
-    void OnDrawGizmosSelected(){
+    // void OnDrawGizmosSelected(){
         
-        for(int i =0;i<roomPoints.Count;i++){
-            Vector2 pos = roomPoints[i];
-            Gizmos.color = Color.HSVToRGB(i*1f/roomPoints.Count,1,1);
-            Gizmos.DrawSphere(new Vector3(pos.x,2,pos.y),0.1f);
-        }
+    //     for(int i =0;i<roomPoints.Count;i++){
+    //         Vector2 pos = roomPoints[i];
+    //         Gizmos.color = Color.HSVToRGB(i*1f/roomPoints.Count,1,1);
+    //         Gizmos.DrawSphere(new Vector3(pos.x,2,pos.y),0.1f);
+    //     }
         
+    // }
+
+    void displayLot(){
+        GameObject lotDis = new GameObject();
+        lotDis.name = "Lot";
+        lotDis.transform.parent = gameObject.transform;
+        MeshRenderer meshr = lotDis.AddComponent<MeshRenderer>();
+        MeshFilter meshf = lotDis.AddComponent<MeshFilter>();
+        meshf.mesh = Helpers.triangulate(this.lot);
+		//meshr.material.mainTexture = (Texture2D)Resources.Load("grassy");
+        meshr.material.SetColor("_Color",Color.white);
+
     }
 
     void displayFootprint(Foundation footprint){
