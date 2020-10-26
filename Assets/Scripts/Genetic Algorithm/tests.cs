@@ -13,20 +13,25 @@ public class tests : MonoBehaviour
     {
        lot = new List<Vector3>{new Vector3(0,0,0),new Vector3(0,0,10),new Vector3(10,0,10), new Vector3(10,0,0)};
        Foundation footprint = new Foundation(lot);
+       RoomPartitioning rooms = new RoomPartitioning(footprint);
+       roomPoints = rooms.genes;
+       AreaProportionConstraint con = new AreaProportionConstraint();
+       Debug.Log(con.getScore(rooms));
        displayLot();
        displayFootprint(footprint);
+       displayRooms(rooms);
 
 
     }
-    // void OnDrawGizmosSelected(){
+    void OnDrawGizmosSelected(){
         
-    //     for(int i =0;i<roomPoints.Count;i++){
-    //         Vector2 pos = roomPoints[i];
-    //         Gizmos.color = Color.HSVToRGB(i*1f/roomPoints.Count,1,1);
-    //         Gizmos.DrawSphere(new Vector3(pos.x,2,pos.y),0.1f);
-    //     }
+        for(int i =0;i<roomPoints.Count;i++){
+            Vector2 pos = roomPoints[i];
+            Gizmos.color = Color.HSVToRGB(i*1f/roomPoints.Count,1,1);
+            Gizmos.DrawSphere(new Vector3(pos.x,2,pos.y),0.1f);
+        }
         
-    // }
+    }
 
     void displayLot(){
         GameObject lotDis = new GameObject();
@@ -41,10 +46,10 @@ public class tests : MonoBehaviour
     }
 
     void displayFootprint(Foundation footprint){
-        Debug.Log("Footprint points:");
-        for(int i =0;i<footprint.genes.Count;i++){
-            Debug.Log(footprint.genes[i]);
-        }
+        // Debug.Log("Footprint points:");
+        // for(int i =0;i<footprint.genes.Count;i++){
+        //     Debug.Log(footprint.genes[i]);
+        // }
         GameObject floor = new GameObject();
         floor.name = "Footprint";
         floor.transform.parent = gameObject.transform;
@@ -57,10 +62,10 @@ public class tests : MonoBehaviour
     }
 
     void displayRooms(RoomPartitioning partitioning){
-        Debug.Log("room points:");
-        for(int i =0;i<partitioning.genes.Count;i++){
-            Debug.Log(partitioning.genes[i]);
-        }
+        // Debug.Log("room points:");
+        // for(int i =0;i<partitioning.genes.Count;i++){
+        //     Debug.Log(partitioning.genes[i]);
+        // }
         GameObject partitionsContainer = new GameObject();
         partitionsContainer.name = "Rooms";
         partitionsContainer.transform.parent = gameObject.transform;

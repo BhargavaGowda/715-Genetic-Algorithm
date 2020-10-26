@@ -6,6 +6,13 @@ abstract public class Constraint<T>{
     abstract public float getScore(T input);
 }
 
+public class FloorRegularizationConstraint:Constraint<Foundation>{
+    public override float getScore(Foundation input)
+    {
+        return (float)Mathf.Clamp(1f-0.2f*input.genes.Count,-1f,1f);
+    
+    }
+}
 public class FloorSmoothConstraint:Constraint<Foundation>{
 
     public override float getScore(Foundation floor){

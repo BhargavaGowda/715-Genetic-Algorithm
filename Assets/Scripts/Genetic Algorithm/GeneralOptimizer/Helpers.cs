@@ -33,10 +33,10 @@ public static class Helpers{
     public static float getArea(List<Vector3> boundary){
         float area = 0f;
         int boundSize = boundary.Count;
-        Vector3 orig = boundary[0];
-        for(int i =1;i<boundSize-1;i++){
-            Vector3 a = boundary[i]-orig;
-            Vector3 b = boundary[i+1]-orig;
+        Vector3 center = getCenter(boundary);
+        for(int i =0;i<boundSize;i++){
+            Vector3 a = boundary[i]-center;
+            Vector3 b = boundary[(i+1)%boundSize]-center;
             area += Vector3.Cross(a,b).magnitude/2f;
         }
         return area;

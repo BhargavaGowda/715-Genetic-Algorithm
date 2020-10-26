@@ -13,7 +13,7 @@ public class RoomPartitioning:Gene<RoomPartitioning>{
 
     public RoomPartitioning(Foundation input,List<Vector2> genes){
         this.footprint = input;
-        this.genes = genes.Distinct().ToList();
+        this.genes = genes;
         outerWalls = new List<Line>();
         innerWalls = new List<Line>();
     }
@@ -41,7 +41,7 @@ public class RoomPartitioning:Gene<RoomPartitioning>{
         return genes.Count;
     }
     public override void mutateAdd(){
-        genes.Add(new Vector2(5.0f*Random.Range(0.0f,1.0f),5.0f*Random.Range(0.0f,1.0f)));
+        genes.Add(Helpers.getRandomPointInBoundary(this.footprint.getBoundary()));
 
     }
 
@@ -54,7 +54,7 @@ public class RoomPartitioning:Gene<RoomPartitioning>{
 
     public override void mutateChange(float scale){
         int change = Random.Range(0,genes.Count);
-        genes[change] = genes[change] + new Vector2(scale*Random.Range(-1.0f,1.0f),scale*Random.Range(-1.0f,1.0f));
+        genes[change] = Helpers.getRandomPointInBoundary(this.footprint.getBoundary());
     }
 
     public override RoomPartitioning createOffspring(RoomPartitioning other){
@@ -74,9 +74,9 @@ public class RoomPartitioning:Gene<RoomPartitioning>{
                 }
             }
         }
-        offspringGenes = offspringGenes.Distinct().ToList();
+        offspringGenes = offspringGenes;
 
-        RoomPartitioning output = new RoomPartitioning(this.footprint,offspringGenes.GetRange(0,Mathf.Min(5,offspringGenes.Count)));
+        RoomPartitioning output = new RoomPartitioning(this.footprint,offspringGenes.GetRange(0,Mathf.Min(10,offspringGenes.Count)));
         return output;
 
     }
