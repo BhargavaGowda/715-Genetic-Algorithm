@@ -25,7 +25,7 @@ class Optimizer<T> where T:Gene<T>{
     public T getOptimizedResult(){
         for(int i =0;i<iterations;i++){
             iterate();
-            Debug.Log("iteration: " + i);
+            // Debug.Log("iteration: " + i);
         }
         return population.OrderBy(i => -1*applyConstraints(i)).ElementAt(0);
     }

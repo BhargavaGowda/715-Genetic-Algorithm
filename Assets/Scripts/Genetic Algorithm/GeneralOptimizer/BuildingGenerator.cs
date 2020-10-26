@@ -12,19 +12,29 @@ class BuildingGenerator:MonoBehaviour{
     public float mutateChange = 0.1f;
     public float mutateScale = 1f;
     public int iter = 10;
+    RoomPartitioning bestRooms;
 
     void Start(){
         generateBuilding();
     }
 
+    void OnDrawGizmosSelected(){
+        
+        for(int i =0;i<bestRooms.genes.Count;i++){
+            Vector2 pos = bestRooms.genes[i];
+            Gizmos.color = Color.HSVToRGB(i*1f/bestRooms.genes.Count,1,1);
+            Gizmos.DrawSphere(new Vector3(pos.x,2,pos.y),0.1f);
+        }
+        
+    }
     void generateBuilding(){
 
         displayLot();        
         Foundation footprint = getFootprint();
         displayFootprint(footprint);
         //Debug.Log(new LotPointsConstraint(lot).getScore(footprint));
-        RoomPartitioning partitioning = getPartitioning(footprint);
-        displayRooms(partitioning);
+        bestRooms = getPartitioning(footprint);
+        displayRooms(bestRooms);
     }
 
     Foundation getFootprint(){

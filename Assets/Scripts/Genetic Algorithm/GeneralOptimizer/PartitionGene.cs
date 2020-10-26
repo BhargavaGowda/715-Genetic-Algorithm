@@ -13,7 +13,7 @@ public class RoomPartitioning:Gene<RoomPartitioning>{
 
     public RoomPartitioning(Foundation input,List<Vector2> genes){
         this.footprint = input;
-        this.genes = genes;
+        this.genes = genes.Distinct().ToList();
         outerWalls = new List<Line>();
         innerWalls = new List<Line>();
     }
@@ -74,6 +74,7 @@ public class RoomPartitioning:Gene<RoomPartitioning>{
                 }
             }
         }
+        offspringGenes = offspringGenes.Distinct().ToList();
 
         RoomPartitioning output = new RoomPartitioning(this.footprint,offspringGenes.GetRange(0,Mathf.Min(5,offspringGenes.Count)));
         return output;
