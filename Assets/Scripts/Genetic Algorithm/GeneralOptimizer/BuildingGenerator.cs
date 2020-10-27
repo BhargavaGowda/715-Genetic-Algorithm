@@ -18,22 +18,22 @@ class BuildingGenerator:MonoBehaviour{
         generateBuilding();
     }
 
-    void OnDrawGizmosSelected(){
+    // void OnDrawGizmosSelected(){
         
-        for(int i =0;i<bestRooms.genes.Count;i++){
-            Vector2 pos = bestRooms.genes[i];
-            Gizmos.color = Color.HSVToRGB(i*1f/bestRooms.genes.Count,1,1);
-            Gizmos.DrawSphere(new Vector3(pos.x,2,pos.y),0.1f);
-        }
+    //     for(int i =0;i<bestRooms.genes.Count;i++){
+    //         Vector2 pos = bestRooms.genes[i];
+    //         Gizmos.color = Color.HSVToRGB(i*1f/bestRooms.genes.Count,1,1);
+    //         Gizmos.DrawSphere(new Vector3(pos.x,2,pos.y),0.1f);
+    //     }
         
-    }
+    // }
     void generateBuilding(){
 
         displayLot();        
         Foundation footprint = getFootprint();
         displayFootprint(footprint);
-        // bestRooms = getPartitioning(footprint);
-        // displayRooms(bestRooms);
+        bestRooms = getPartitioning(footprint);
+        displayRooms(bestRooms);
     }
 
     Foundation getFootprint(){
