@@ -339,7 +339,7 @@ MonoBehaviour:
   mutateRemove: 0.1
   mutateChange: 0.2
   mutateScale: 3
-  iter: 200
+  iter: 100
 --- !u!4 &1698928453
 Transform:
   m_ObjectHideFlags: 0
