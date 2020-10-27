@@ -132,7 +132,8 @@ class BuildingGenerator:MonoBehaviour{
             MeshRenderer meshr = room.AddComponent<MeshRenderer>();
             MeshFilter meshf = room.AddComponent<MeshFilter>();
             meshf.mesh = Helpers.triangulate(Helpers.reorder(rooms[i]));
-            meshr.material.SetColor("_Color",Color.HSVToRGB(i*1f/rooms.Count,1,1));
+            //meshr.material.SetColor("_Color",Color.HSVToRGB(i*1f/rooms.Count,1,1));
+            meshr.material.SetColor("_Color", getColor(i, rooms.Count));
         }
     }
 	
@@ -173,4 +174,23 @@ class BuildingGenerator:MonoBehaviour{
 			wall.transform.position += new Vector3(0f,3f,0);
 		}
 	}
+	
+	UnityEngine.Color getColor(int i, int length){
+        if (i == 0){
+            if (length > 3){
+                return Color.red;
+            }
+        }
+        if (i == 1){
+            if (length > 2){
+                return Color.yellow;
+            }
+        }
+        if (i == length - 1){
+            if (length > 1){
+                return Color.blue;
+            }
+        }
+        return Color.green;
+    }
 }
