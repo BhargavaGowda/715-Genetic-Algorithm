@@ -34,6 +34,7 @@ class BuildingGenerator:MonoBehaviour{
         displayFootprint(footprint);
         bestRooms = getPartitioning(footprint);
         displayRooms(bestRooms);
+		displayRoof(footprint);
     }
 
     Foundation getFootprint(){
@@ -174,6 +175,31 @@ class BuildingGenerator:MonoBehaviour{
 			wall.transform.position += new Vector3(0f,3f,0);
 		}
 	}
+	
+	void displayRoof(Foundation footprint){
+        // Debug.Log("Footprint points:");
+        // for(int i =0;i<footprint.genes.Count;i++){
+        //     Debug.Log(footprint.genes[i]);
+        // }
+        GameObject floor = new GameObject();
+        floor.name = "Roof";
+        floor.transform.parent = gameObject.transform;
+        floor.transform.position = new Vector3(0,4f,0);
+        MeshRenderer meshr = floor.AddComponent<MeshRenderer>();
+        MeshFilter meshf = floor.AddComponent<MeshFilter>();
+        meshf.mesh = Helpers.triangulate(footprint.getBoundary());
+		//meshr.BlendMode.Transparent;
+		Color newColor = new Color(0.3f, 0.4f, 0.6f, 0.3f);
+		//meshr.a = 0.2f;
+        meshr.material.color = new Color(0.5f, 0.5f, 0.5f, 0.2f);
+		meshr.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+        meshr.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        meshr.material.SetInt("_ZWrite", 0);
+        meshr.material.DisableKeyword("_ALPHATEST_ON");
+        meshr.material.DisableKeyword("_ALPHABLEND_ON");
+        meshr.material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+        meshr.material.renderQueue = 3000;
+    }
 	
 	UnityEngine.Color getColor(int i, int length){
         if (i == 0){
