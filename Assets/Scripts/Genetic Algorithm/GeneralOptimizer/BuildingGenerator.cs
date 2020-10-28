@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 //Make sure all mesh points are specified clockwise.
 class BuildingGenerator:MonoBehaviour{
 
     public List<Vector3> lot;
+    public Material roof;
     public int popSize = 10;
     public float mutateAdd = 0.1f;
     public float mutateRemove = 0.1f;
@@ -39,7 +41,8 @@ class BuildingGenerator:MonoBehaviour{
 
     Foundation getFootprint(){
         List<Constraint<Foundation>> footprintConstraints = new List<Constraint<Foundation>>();
-        // footprintConstraints.Add(new FloorBlockyConstraint());
+        footprintConstraints.Add(new FloorSmoothConstraint());
+        footprintConstraints.Add(new FloorBlockyConstraint());
         footprintConstraints.Add(new FloorOrientationConstraint());
         footprintConstraints.Add(new LotCoverageConstraint(lot));
         footprintConstraints.Add(new FloorRegularizationConstraint());
@@ -65,6 +68,7 @@ class BuildingGenerator:MonoBehaviour{
     RoomPartitioning getPartitioning(Foundation footprint){
         List<Constraint<RoomPartitioning>> roomConstraints = new List<Constraint<RoomPartitioning>>();
         roomConstraints.Add(new AreaProportionConstraint());
+        roomConstraints.Add(new RoomSquarenessConstraint());
         roomConstraints.Add(new RoomsRegularizationConstraint());
         List<RoomPartitioning> seedPop = new List<RoomPartitioning>();
         for(int i =0;i<popSize;i++){
@@ -122,8 +126,9 @@ class BuildingGenerator:MonoBehaviour{
         partitionsContainer.name = "Rooms";
         partitionsContainer.transform.parent = gameObject.transform;
         partitionsContainer.transform.position = new Vector3(0,2,0);
-        List<List<Vector3>> rooms = partitioning.getPartitions();
+        List<List<Vector3>> rooms = partitioning.getPartitions().OrderBy(x => -1f*Helpers.getArea(x)).ToList();
         List<GameObject> roomObjects = new List<GameObject>();
+        List<Color> roomSemantics = getColor(rooms.Count);
         for(int i = 0;i<rooms.Count;i++){
 			displayWalls(Helpers.reorder(rooms[i]));
             GameObject room = new GameObject();
@@ -133,8 +138,7 @@ class BuildingGenerator:MonoBehaviour{
             MeshRenderer meshr = room.AddComponent<MeshRenderer>();
             MeshFilter meshf = room.AddComponent<MeshFilter>();
             meshf.mesh = Helpers.triangulate(Helpers.reorder(rooms[i]));
-            //meshr.material.SetColor("_Color",Color.HSVToRGB(i*1f/rooms.Count,1,1));
-            meshr.material.SetColor("_Color", getColor(i, rooms.Count));
+            meshr.material.SetColor("_Color", roomSemantics[i]);
         }
     }
 	
@@ -188,35 +192,45 @@ class BuildingGenerator:MonoBehaviour{
         MeshRenderer meshr = floor.AddComponent<MeshRenderer>();
         MeshFilter meshf = floor.AddComponent<MeshFilter>();
         meshf.mesh = Helpers.triangulate(footprint.getBoundary());
-		//meshr.BlendMode.Transparent;
-		Color newColor = new Color(0.3f, 0.4f, 0.6f, 0.3f);
+        meshr.material = roof;
+
 		//meshr.a = 0.2f;
-        meshr.material.color = new Color(0.5f, 0.5f, 0.5f, 0.2f);
-		meshr.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-        meshr.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        meshr.material.SetInt("_ZWrite", 0);
-        meshr.material.DisableKeyword("_ALPHATEST_ON");
-        meshr.material.DisableKeyword("_ALPHABLEND_ON");
-        meshr.material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
-        meshr.material.renderQueue = 3000;
+        // meshr.material.color = new Color(0.5f, 0.5f, 0.5f, 0.2f);
+		// meshr.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+        // meshr.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        // meshr.material.SetInt("_ZWrite", 0);
+        // meshr.material.DisableKeyword("_ALPHATEST_ON");
+        // meshr.material.DisableKeyword("_ALPHABLEND_ON");
+        // meshr.material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+        // meshr.material.renderQueue = 3000;
     }
 	
-	UnityEngine.Color getColor(int i, int length){
-        if (i == 0){
-            if (length > 3){
-                return Color.red;
+	List<Color> getColor(int length){
+        List<Color> output = new List<Color>();
+        if(length<=1){
+            output.Add(Color.green);
+        }else if(length == 2){
+            output.Add(Color.green);
+            output.Add(Color.blue);
+        }else if(length == 3){
+            output.Add(Color.red);
+            output.Add(Color.green);
+            output.Add(Color.blue);
+        }else if(length == 4){
+            output.Add(Color.red);
+            output.Add(Color.yellow);
+            output.Add(Color.green);
+            output.Add(Color.blue);
+        }else{
+            output.Add(Color.red);
+            output.Add(Color.yellow);
+            output.Add(Color.green);
+            output.Add(Color.blue);
+            for(int i = 4;i<length;i++){
+                output.Add(Color.grey);
             }
         }
-        if (i == 1){
-            if (length > 2){
-                return Color.yellow;
-            }
-        }
-        if (i == length - 1){
-            if (length > 1){
-                return Color.blue;
-            }
-        }
-        return Color.green;
+
+        return output;
     }
 }

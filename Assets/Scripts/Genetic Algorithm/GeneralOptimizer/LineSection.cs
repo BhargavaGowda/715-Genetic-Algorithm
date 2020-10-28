@@ -16,6 +16,10 @@ public class Line{
         return string.Format("Line from {0} to {1}",start,end);
 
     }
+
+    public float getLength(){
+        return this.direction.magnitude;
+    }
 	
 
     public bool getIntersection(out Vector3 intersection, Line other){

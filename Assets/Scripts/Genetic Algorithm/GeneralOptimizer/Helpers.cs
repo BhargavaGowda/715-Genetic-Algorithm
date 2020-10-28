@@ -33,6 +33,7 @@ public static class Helpers{
     }
 
     public static float getArea(List<Vector3> boundary){
+        boundary = reorder(boundary);
         float area = 0f;
         int boundSize = boundary.Count;
         Vector3 center = getCenter(boundary);
@@ -152,21 +153,23 @@ public static class Helpers{
     }
 
     public static Vector2 getRandomPointInBoundary(List<Vector3> boundary){
-        Vector3 center = getCenter(boundary);
-        
-        float minDist = (boundary[0]-center).magnitude;
-        foreach(Vector3 i in boundary){
-            if((i-center).magnitude < minDist){
-                minDist = (i-center).magnitude;
+        float maxX = Mathf.Max(boundary.Select(x => x.x).ToArray());
+        float minX = Mathf.Min(boundary.Select(x => x.x).ToArray());
+        float maxZ = Mathf.Max(boundary.Select(x => x.z).ToArray());
+        float minZ = Mathf.Min(boundary.Select(x => x.z).ToArray());
+
+        int count = 0;
+        Vector2 output = new Vector3(Random.Range(minX,maxX),Random.Range(minZ,maxZ));
+
+        while(!isPointInside(output,boundary)){
+            output = new Vector3(Random.Range(minX,maxX),Random.Range(minZ,maxZ));
+            count +=1;
+            if(count>maxIter){
+                Debug.Log("randPointFail");
+                return getCenter(boundary);
             }
         }
-        float angle = Random.Range(0f,2*Mathf.PI);
-        float dist = Random.Range(0f,minDist)/2;
-
-        Vector2 offset = new Vector2(dist*Mathf.Cos(angle),dist*Mathf.Sin(angle));
-
-        Vector2 output = offset + new Vector2(center.x,center.z);
-        return output;
         
+        return output;   
     }
 }

@@ -9,7 +9,13 @@ abstract public class Constraint<T>{
 public class FloorRegularizationConstraint:Constraint<Foundation>{
     public override float getScore(Foundation input)
     {
-        return (float)Mathf.Clamp(-0.1f*input.genes.Count,-1f,1f);
+        if(input.genes.Count <= 4){
+            return 0;
+        }
+        else{
+            return (float)Mathf.Clamp(-0.1f*(input.genes.Count-4),-1f,1f);
+
+        }
     
     }
 }
@@ -45,24 +51,15 @@ public class FloorBlockyConstraint:Constraint<Foundation>{
         List<Vector3> boundary = Helpers.reorder(input.getBoundary());
         float score = 0f;
         for(int i =0; i<boundary.Count;i++){
-            Vector3 a = boundary[(i+1)%boundary.Count]-boundary[i];
+            Vector3 a = Vector3.Normalize(boundary[(i+1)%boundary.Count]-boundary[i]);
             Vector3 b = new Vector3(1,0,0);
-            score+=getAngleScore(Vector3.Angle(a,b));
+            Vector3 c = new Vector3(0,0,1);
+            score += Mathf.Max(Mathf.Abs(Vector3.Dot(a,b)),Mathf.Abs(Vector3.Dot(a,c)));
+            
         }
 
         return score/boundary.Count;        
 
-    }
-
-    public float getAngleScore(float angle){
-        float angleMod = angle%90;
-        if(Mathf.Abs(angleMod-90)<5){
-            return 1f;
-        }
-        if(Mathf.Abs(angleMod)<5){
-           return 1f;
-        }
-        return Mathf.Max(Mathf.Cos(angleMod),Mathf.Sin(angleMod))/2;
     }
 }
 public class FloorOrientationConstraint:Constraint<Foundation>{
@@ -131,8 +128,45 @@ public class RoomsRegularizationConstraint:Constraint<RoomPartitioning>{
 
     public override float getScore(RoomPartitioning input)
     {
-        return (float)Mathf.Clamp(-0.1f*input.genes.Count,-1f,1f);
+        if(input.genes.Count <= 3){
+            return 0;
+        }
+        else{
+            return (float)Mathf.Clamp(-0.1f*(input.genes.Count-4),-1f,1f);
+
+        }
     
+    }
+
+}
+
+public class RoomSquarenessConstraint:Constraint<RoomPartitioning>{
+
+    public override float getScore(RoomPartitioning partitioning){
+        List<List<Vector3>> rooms = partitioning.getPartitions();
+        if(rooms.Count==1){
+            return 0f;
+        }
+        float score = 0f;
+
+        foreach(List<Vector3> room in rooms){
+            score += getSquareness(room);
+        }
+
+        return score/rooms.Count;     
+    }
+
+    float getSquareness(List<Vector3> room){
+        room = Helpers.reorder(room);
+        float roomArea = Helpers.getArea(room);
+        float perimeter = 0;
+        for(int i =0; i<room.Count;i++){
+            perimeter += (room[(i+1)%room.Count]-room[i]).magnitude;
+        }
+        float optimal = Mathf.Pow(perimeter/4,2);
+        return roomArea/optimal;
+
+
     }
 
 }

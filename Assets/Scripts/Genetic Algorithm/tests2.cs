@@ -13,7 +13,7 @@ public class tests2 : MonoBehaviour{
             new Vector3(1.8f,0,0.9f),
             new Vector3(6.5f,0,0.1f),
         };
-        Vector2 testPoint = new Vector2(3.4f,4.1f);
+        Vector2 testPoint = Helpers.getRandomPointInBoundary(testBound);
 
         GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
         
